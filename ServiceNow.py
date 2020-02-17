@@ -15,21 +15,23 @@ from getpass import getpass
 class ServiceNow():
     auth_page = "shib.idm.umd.edu"
     impl_wait = 30
-    
+    home_page = "https://umddev.service-now.com"
+
     def __init__(self, driver, logs=True):
-    	driver.implicitly_wait(self.impl_wait)
-    	self.driver = driver
-    	self.logs = logs
-    	if logs: 
-    	    print("Created ServiceNow Object")
-    	    print("Implicit Wait Time Set To", self.impl_wait)
-    	print("Logs Disabled")
+        driver.implicitly_wait(self.impl_wait)
+        self.driver = driver
+        self.logs = logs
+        if logs: 
+            print("Created ServiceNow Object")
+            print("Implicit Wait Time Set To", self.impl_wait)
+        else: print("Logs Disabled")
+
     def log(self, s):
     	if self.logs: print(s)
     
     def login(self, directory_id=None, password=None):
     	self.log("Checking that user is logged in")
-    	self.driver.get("https://umddev.service-now.com")
+    	self.driver.get(self.home_page)
     	if self.auth_page not in self.driver.current_url: return
     
     	self.log("Requesting user credentials for login")
@@ -51,24 +53,27 @@ class ServiceNow():
     	return True
     
     def impersonate(self, user):
-    	self.log("Impersonating " + user)
-    	self.driver.get("https://umddev.service-now.com")
-    	
-    	#WebDriverWait(self.driver, 30000).until(expected_conditions.visibility_of_element_located((By.ID, "user_info_dropdown")))
-    	self.log("Finding " + user)
-    	self.driver.find_element(By.ID, "user_info_dropdown").click()
-    	self.driver.find_element(By.CSS_SELECTOR, "#glide_ui_impersonator").click()
-    	element = self.driver.find_element(By.ID, "select2-chosen-2")
-    	actions = ActionChains(self.driver)
-    	actions.move_to_element(element).click_and_hold().perform()
-    	element = self.driver.find_element(By.ID, "select2-drop-mask")
-    	actions = ActionChains(self.driver)
-    	actions.move_to_element(element).release().perform()
-    
-    	WebDriverWait(self.driver, self.impl_wait*1000).until(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, "#select2-results-2 > li")))
-    	self.driver.find_element(By.ID, "s2id_autogen2_search").send_keys(user)
-    	time.sleep(1)
-    	self.driver.find_element(By.CSS_SELECTOR, "#select2-results-2 > li").click()#send_keys(Keys.ENTER)
+        self.log("Impersonating " + user)
+        self.driver.get(self.home_page)
+
+        #WebDriverWait(self.driver, 30000).until(expected_conditions.visibility_of_element_located((By.ID, "user_info_dropdown")))
+        self.log("Finding " + user)
+        self.driver.find_element(By.ID, "user_info_dropdown").click()
+        self.driver.find_element(By.CSS_SELECTOR, "#glide_ui_impersonator").click()
+        element = self.driver.find_element(By.ID, "select2-chosen-2")
+        actions = ActionChains(self.driver)
+        actions.move_to_element(element).click_and_hold().perform()
+        element = self.driver.find_element(By.ID, "select2-drop-mask")
+        actions = ActionChains(self.driver)
+        actions.move_to_element(element).release().perform()
+
+        WebDriverWait(self.driver, self.impl_wait*1000).until(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, "#select2-results-2 > li")))
+        self.driver.find_element(By.ID, "s2id_autogen2_search").send_keys(user)
+        time.sleep(3)
+        self.driver.find_element(By.CSS_SELECTOR, "#select2-results-2 > li").click() #send_keys(Keys.ENTER)
+        self.log("Impersonated " + user)
+        time.sleep(3)
+        self.driver.get(self.home_page)
 
 if __name__ == "__main__":
     chrome_driver_path = os.path.join(".","chromedriver.exe")
