@@ -14,6 +14,10 @@ from ServiceNow import ServiceNow
 class Mainframe(ServiceNow):
     
     form_url = 'https://umddev.service-now.com/itsupport?id=sc_cat_item&sys_id=9197ec3edbdc8410965bd5ab5e961963' 
+    envs = {"Development" : 2,
+            "Production" : 3,
+            "Both" : 4}
+
     def __init__(self, driver, logs=True):
         super().__init__(driver, logs)
     
@@ -40,6 +44,17 @@ class Mainframe(ServiceNow):
         self.driver.find_element(By.CSS_SELECTOR, res).click()
         self.log("Selected Manager " + manager)
 
+    def select_environment(self, env):
+        self.log("Selecting Environment " + env + " ID: %d" % self.envs[env])
+        self.driver.find_element(By.CSS_SELECTOR, "#sp_formfield_environments > label:nth-child(%d) > span" % self.envs[env]).click()
+
+    def select_application(self, app):
+        self.log("Selecting Application: " + app)
+        self.driver.find_element(By.ID, "sp_formfield_access_" + app.lower()).click()
+
+    def select_specific_dataset():
+        pass
+    
 if __name__ == '__main__':
     chrome_driver_path = os.path.join(".", "chromedriver.exe")
     driver = webdriver.Chrome(executable_path=chrome_driver_path)
@@ -48,5 +63,7 @@ if __name__ == '__main__':
     mf.impersonate("Jess Jacobson")
     mf.navigate_to_form()
     mf.enter_manager("William Biddle")
+    mf.select_environment("Development")
+    mf.select_application("ADM")
     input("Hit Enter To Close Page")
     driver.quit()
