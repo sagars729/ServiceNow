@@ -52,6 +52,7 @@ class ServiceNow():
     	self.log("Logged in as " + directory_id)
     	return True
     
+    #EXPLICIT WAIT SHOULD BE REPLACED
     def impersonate(self, user):
         self.log("Impersonating " + user)
         self.driver.get(self.home_page)
