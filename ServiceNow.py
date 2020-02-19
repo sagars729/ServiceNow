@@ -78,7 +78,7 @@ class ServiceNow():
 
 if __name__ == "__main__":
     chrome_driver_path = os.path.join(".","chromedriver.exe")
-    driver = webdriver.Chrome(executable_path=chrome_driver_path)
+    driver = webdriver.Chrome()#executable_path=chrome_driver_path)
     sn = ServiceNow(driver)
     sn.login()
     sn.impersonate("Jess Jacobson")

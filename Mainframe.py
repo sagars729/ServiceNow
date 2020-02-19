@@ -77,7 +77,9 @@ class Mainframe(ServiceNow):
         self.driver.execute_script("$(\".btn-block\").click()")
         
         self.log("Agreeing to Statement of Understanding")
-        self.driver.find_element(By.CSS_SELECTOR, "body > div.swal2-container.swal2-center.swal2-fade.swal2-shown > div > div.swal2-actions > button.swal2-confirm.swal2-styled").click()
+        sou = "body > div.swal2-container.swal2-center.swal2-fade.swal2-shown > div > div.swal2-actions > button.swal2-confirm.swal2-styled"
+        self.driver.execute_script("$(\"" + sou + "\").click()")
+
         time.sleep(3)
         if check: return self.assert_submit()
 
@@ -116,9 +118,16 @@ class Mainframe(ServiceNow):
                 return True
         return False
 
+    def get_approvers(self):
+        els = [e for e in self.driver.find_elements(By.CLASS_NAME, "panel")]
+        for e in els: print(e.get_attribute("title")) 
+        els = [e for e in self.driver.find_elements(By.CLASS_NAME, "panel")][0].find_elements(By.CLASS_NAME, "col-xs-6") 
+        for e in els: 
+            print(e.text)
+	
 if __name__ == '__main__':
     chrome_driver_path = os.path.join(".", "chromedriver.exe")
-    driver = webdriver.Chrome(executable_path=chrome_driver_path)
+    driver = webdriver.Chrome()#executable_path=chrome_driver_path)
     
     mf = Mainframe(driver)
     mf.login()
@@ -129,7 +138,7 @@ if __name__ == '__main__':
     mf.select_application("ADM", "this is a reason to request access")
     ticket, request = mf.submit_form(True)
     mf.navigate_to_ticket(request, ticket)
-    
+    mf.get_approvers() 
 
     input("Hit Enter To Close Page")
     driver.quit()
