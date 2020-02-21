@@ -57,8 +57,9 @@ class Mainframe(ServiceNow):
 
     def select_application(self, app, res="", typ="student"):
         self.log("Selecting " + typ.capitalize() + " Application: " + app)
-        self.driver.find_element(By.ID, "sp_formfield_access_" + app.lower()).click()
-        
+        #self.driver.find_element(By.ID, "sp_formfield_access_" + app.lower()).click()
+        self.driver.execute_script("$(\"#sp_formfield_access_%s\").click()" % app.lower())
+
         self.log("Filling Reason: " + res) 
         self.driver.find_element(By.ID, "sp_formfield_reason_of_request_" + typ.lower()).click()
         self.driver.find_element(By.ID, "sp_formfield_reason_of_request_" + typ.lower()).send_keys(res)
@@ -80,7 +81,7 @@ class Mainframe(ServiceNow):
         sou = "body > div.swal2-container.swal2-center.swal2-fade.swal2-shown > div > div.swal2-actions > button.swal2-confirm.swal2-styled"
         self.driver.execute_script("$(\"" + sou + "\").click()")
 
-        time.sleep(3)
+        time.sleep(self.expl_wait)
         if check: return self.assert_submit()
 
     #This method should be added to either the ServiceNow Class or a Super Class For Forms To Avoid Duplication
@@ -119,11 +120,12 @@ class Mainframe(ServiceNow):
         return False
 
     def get_approvers(self):
-        els = [e for e in self.driver.find_elements(By.CLASS_NAME, "panel")]
-        for e in els: print(e.get_attribute("title")) 
-        els = [e for e in self.driver.find_elements(By.CLASS_NAME, "panel")][0].find_elements(By.CLASS_NAME, "col-xs-6") 
-        for e in els: 
-            print(e.text)
+        self.log("Finding Approvers")
+        els = self.driver.find_elements(By.CLASS_NAME, "col-xs-6")
+        app = []
+        for e in els: app.append(e.text.split("\n")[0])
+        for a in app: self.log("Found Approver %s" % a)
+        return app
 	
 if __name__ == '__main__':
     chrome_driver_path = os.path.join(".", "chromedriver.exe")

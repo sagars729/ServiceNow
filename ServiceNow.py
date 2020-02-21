@@ -16,6 +16,7 @@ class ServiceNow():
     auth_page = "shib.idm.umd.edu"
     impl_wait = 30
     home_page = "https://umddev.service-now.com"
+    expl_wait = 5
 
     def __init__(self, driver, logs=True):
         driver.implicitly_wait(self.impl_wait)
@@ -24,6 +25,7 @@ class ServiceNow():
         if logs: 
             print("Created ServiceNow Object")
             print("Implicit Wait Time Set To", self.impl_wait)
+            print("Explicit Wait Time Set To", self.expl_wait)
         else: print("Logs Disabled")
 
     def log(self, s):
@@ -70,10 +72,10 @@ class ServiceNow():
 
         WebDriverWait(self.driver, self.impl_wait*1000).until(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, "#select2-results-2 > li")))
         self.driver.find_element(By.ID, "s2id_autogen2_search").send_keys(user)
-        time.sleep(3)
+        time.sleep(self.expl_wait)
         self.driver.find_element(By.CSS_SELECTOR, "#select2-results-2 > li").click() #send_keys(Keys.ENTER)
         self.log("Impersonated " + user)
-        time.sleep(3)
+        time.sleep(self.expl_wait)
         self.driver.get(self.home_page)
 
 if __name__ == "__main__":
