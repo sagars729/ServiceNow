@@ -14,8 +14,9 @@ from getpass import getpass
 ###This class is used to perform all actions on the agent view of ServiceNow
 class ServiceNow():
     auth_page = "shib.idm.umd.edu"
-    impl_wait = 30
     home_page = "https://umddev.service-now.com"
+    
+    impl_wait = 30
     expl_wait = 5
 
     def __init__(self, driver, logs=True):
@@ -58,6 +59,7 @@ class ServiceNow():
     def impersonate(self, user):
         self.log("Impersonating " + user)
         self.driver.get(self.home_page)
+        self.driver.get(self.home_page)
 
         #WebDriverWait(self.driver, 30000).until(expected_conditions.visibility_of_element_located((By.ID, "user_info_dropdown")))
         self.log("Finding " + user)
@@ -70,7 +72,8 @@ class ServiceNow():
         actions = ActionChains(self.driver)
         actions.move_to_element(element).release().perform()
 
-        WebDriverWait(self.driver, self.impl_wait*1000).until(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, "#select2-results-2 > li")))
+        #WebDriverWait(self.driver, self.impl_wait*1000).until(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, "#select2-results-2 > li")))
+        time.sleep(self.expl_wait)
         self.driver.find_element(By.ID, "s2id_autogen2_search").send_keys(user)
         time.sleep(self.expl_wait)
         self.driver.find_element(By.CSS_SELECTOR, "#select2-results-2 > li").click() #send_keys(Keys.ENTER)

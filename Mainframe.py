@@ -15,6 +15,7 @@ class Mainframe(ServiceNow):
     
     form_url = 'https://umddev.service-now.com/itsupport?id=sc_cat_item&sys_id=9197ec3edbdc8410965bd5ab5e961963' 
     req_url = 'https://umddev.service-now.com/itsupport?id=my_requests'
+    app_url = 'https://umddev.service-now.com/itsupport?id=approvals'
 
     envs = {"development" : 2,
             "production" : 3,
@@ -36,6 +37,10 @@ class Mainframe(ServiceNow):
         field = "select2-drop-mask"
         inp = "#select2-drop > div > input"
         res = "#select2-results-6 > li"
+
+        self.log("Including all managers")
+        time.sleep(self.expl_wait)
+        self.driver.execute_script("$(\"#sp_formfield_show_all_manager\").click()")
 
         self.log("Locating Field")
         element = self.driver.find_element(By.LINK_TEXT, "Lookup using list")
@@ -130,6 +135,15 @@ class Mainframe(ServiceNow):
         for a in app: 
             self.log("Found Approver %s with status %s" % a)
         return app
+
+    #This method should be added to either the ServiceNow Class or a Super Class For Forms To Avoid Duplication
+    def approve_ticket(self, approver, ticket, request, user=None):
+        mf.impersonate(approver)
+        self.driver.get(self.app_url)
+        self.driver.find_element(By.PARTIAL_LINK_TEXT, ticket).click()
+        self.driver.find_element(By.NAME, "approve").click()
+        if user != None: mf.impersonate(user)
+
 	
 if __name__ == '__main__':
     chrome_driver_path = os.path.join(".", "chromedriver.exe")
@@ -139,13 +153,14 @@ if __name__ == '__main__':
     mf.login()
     mf.impersonate("Jess Jacobson")
     mf.navigate_to_form()
-    mf.enter_manager("William Biddle")
+    mf.enter_manager("Scott Gibson")
     mf.select_environment("Development")
     mf.select_application("ADM", "this is a reason to request access", typ="student")
     mf.select_application("FIN", typ="student")
     ticket, request = mf.submit_form(True)
     mf.navigate_to_ticket(request, ticket)
-    mf.get_approvers() 
-
+    apps = mf.get_approvers() 
+    for a in apps:
+        mf.approve_ticket(a[0], ticket, request, "Jess Jacobson")
     input("Hit Enter To Close Page")
     driver.quit()
