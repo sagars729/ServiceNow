@@ -119,12 +119,16 @@ class Mainframe(ServiceNow):
                 return True
         return False
 
+    #This method should be added to either the ServiceNow Class or a Super Class For Forms To Avoid Duplication
     def get_approvers(self):
         self.log("Finding Approvers")
         els = self.driver.find_elements(By.CLASS_NAME, "col-xs-6")
+        alt = self.driver.find_elements(By.CSS_SELECTOR, ".col-xs-1 > span")
         app = []
-        for e in els: app.append(e.text.split("\n")[0])
-        for a in app: self.log("Found Approver %s" % a)
+        for i, e in enumerate(els): 
+            app.append((e.text.split("\n")[0], alt[i].get_attribute("alt")))
+        for a in app: 
+            self.log("Found Approver %s with status %s" % a)
         return app
 	
 if __name__ == '__main__':
@@ -137,7 +141,8 @@ if __name__ == '__main__':
     mf.navigate_to_form()
     mf.enter_manager("William Biddle")
     mf.select_environment("Development")
-    mf.select_application("ADM", "this is a reason to request access")
+    mf.select_application("ADM", "this is a reason to request access", typ="student")
+    mf.select_application("FIN", typ="student")
     ticket, request = mf.submit_form(True)
     mf.navigate_to_ticket(request, ticket)
     mf.get_approvers() 
