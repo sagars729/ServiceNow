@@ -53,6 +53,7 @@ class ServiceNow():
     	WebDriverWait(self.driver, self.impl_wait*1000).until(expected_conditions.visibility_of_element_located((By.ID, "user_info_dropdown")))
     	
     	self.log("Logged in as " + directory_id)
+    	self.user = directory_id
     	return True
     
     #EXPLICIT WAIT SHOULD BE REPLACED
@@ -78,6 +79,7 @@ class ServiceNow():
         time.sleep(self.expl_wait)
         self.driver.find_element(By.CSS_SELECTOR, "#select2-results-2 > li").click() #send_keys(Keys.ENTER)
         self.log("Impersonated " + user)
+        self.user = user
         time.sleep(self.expl_wait)
         self.driver.get(self.home_page)
 

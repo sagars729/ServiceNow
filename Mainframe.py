@@ -16,6 +16,7 @@ class Mainframe(ServiceNow):
     form_url = 'https://umddev.service-now.com/itsupport?id=sc_cat_item&sys_id=9197ec3edbdc8410965bd5ab5e961963' 
     req_url = 'https://umddev.service-now.com/itsupport?id=my_requests'
     app_url = 'https://umddev.service-now.com/itsupport?id=approvals'
+    temp_app_url = 'https://umddev.service-now.com/hosting?id=approvals'
 
     envs = {"development" : 2,
             "production" : 3,
@@ -24,6 +25,7 @@ class Mainframe(ServiceNow):
             "financial": ["pro", "rfe"],
             "business": ["cop", "edb", "mtr", "pay", "phr", "tvl"],
             "other": ["ann", "dcp", "din", "usm"]}
+    expl_wait = 10
 
     def __init__(self, driver, logs=True):
         super().__init__(driver, logs)
@@ -52,7 +54,7 @@ class Mainframe(ServiceNow):
         
         self.log("Selecting Manager " + manager)
         self.driver.find_element(By.CSS_SELECTOR, inp).send_keys(manager)
-        time.sleep(3)
+        time.sleep(self.expl_wait)
         self.driver.find_element(By.CSS_SELECTOR, res).click()
         self.log("Selected Manager " + manager)
 
@@ -137,14 +139,43 @@ class Mainframe(ServiceNow):
         return app
 
     #This method should be added to either the ServiceNow Class or a Super Class For Forms To Avoid Duplication
-    def approve_ticket(self, approver, ticket, request, user=None):
+    def approve_ticket(self, approver, ticket, request):
+        user = self.user
+        self.log("Approving Ticket for " + self.user)
         mf.impersonate(approver)
-        self.driver.get(self.app_url)
-        self.driver.find_element(By.PARTIAL_LINK_TEXT, ticket).click()
-        self.driver.find_element(By.NAME, "approve").click()
-        if user != None: mf.impersonate(user)
 
-	
+        self.log("Navigating to Ticket " + ticket)
+        self.driver.get(self.temp_app_url)
+        els = self.driver.find_elements(By.CSS_SELECTOR, "li:nth-child(9) > a > span:nth-child(1)")
+        for el in els:
+            if "my approval needed" in el.text.lower(): 
+                break
+        el.click()
+        #self.driver.get(self.app_url)
+        self.driver.find_element(By.PARTIAL_LINK_TEXT, ticket).click()
+        time.sleep(self.expl_wait)
+
+        self.log("Approving Ticket " + ticket)
+        self.driver.find_element(By.NAME, "approve").click()
+        mf.impersonate(user)
+
+    def chain_approval(self, ticket, request):
+        chain = []
+        while True:
+            mf.navigate_to_ticket(request, ticket)
+            apps = mf.get_approvers()
+            apps = [a[0] for a in apps if a[1] == "Requested"]
+            if len(apps) <= 0: break
+
+            mf.approve_ticket(apps[0], ticket, request)
+            self.log("CHAIN " + str(len(chain)) + ": " + apps[0]) 
+            
+            chain.append(apps[0])
+            self.log("Waiting One Minute For Approval Process")
+            time.sleep(60)
+        return chain
+
+
 if __name__ == '__main__':
     chrome_driver_path = os.path.join(".", "chromedriver.exe")
     driver = webdriver.Chrome()#executable_path=chrome_driver_path)
@@ -159,8 +190,7 @@ if __name__ == '__main__':
     mf.select_application("FIN", typ="student")
     ticket, request = mf.submit_form(True)
     mf.navigate_to_ticket(request, ticket)
-    apps = mf.get_approvers() 
-    for a in apps:
-        mf.approve_ticket(a[0], ticket, request, "Jess Jacobson")
+    mf.chain_approval(ticket, request)
+
     input("Hit Enter To Close Page")
     driver.quit()
