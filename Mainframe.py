@@ -13,6 +13,7 @@ from ServiceNow import ServiceNow
 
 class Mainframe(ServiceNow):
     
+    log_id = "Mainframe"
     form_url = 'https://umddev.service-now.com/itsupport?id=sc_cat_item&sys_id=9197ec3edbdc8410965bd5ab5e961963' 
     req_url = 'https://umddev.service-now.com/itsupport?id=my_requests'
     app_url = 'https://umddev.service-now.com/itsupport?id=approvals'
@@ -30,6 +31,9 @@ class Mainframe(ServiceNow):
     def __init__(self, driver, logs=True):
         super().__init__(driver, logs)
     
+    def log(self, s):
+        if self.logs: print("%s:" % self.log_id, s)
+
     def navigate_to_form(self):
         self.log("Navigating to Access Management Mainframe Form")
         self.driver.get(self.form_url)
@@ -89,92 +93,33 @@ class Mainframe(ServiceNow):
         self.driver.execute_script("$(\"" + sou + "\").click()")
 
         time.sleep(self.expl_wait)
-        if check: return self.assert_submit()
+        if check: 
+            ticket, request = self.check_submit()
+            assert(ticket != None)
+            return ticket, request
 
-    #This method should be added to either the ServiceNow Class or a Super Class For Forms To Avoid Duplication
-    def assert_submit(self):
-        self.log("Checking That Form Was Submitted")
-        elements = self.driver.find_elements(By.PARTIAL_LINK_TEXT, "RITM")
-        assert(len(elements) > 0)
-
-        ticket = self.driver.find_element(By.PARTIAL_LINK_TEXT, "RITM").text
-        self.log("Ticket: " + ticket)
-        self.driver.find_element(By.PARTIAL_LINK_TEXT, "RITM").click()
-        
-        fields = self.driver.find_elements(By.CLASS_NAME, "select2-chosen")
-        for f in fields:
-            if "REQ" in f.text: 
-                self.log("Request: " + f.text)
-                return ticket, f.text
-        
-        return ticket, None
-
-    #This method should be added to either the ServiceNow Class or a Super Class For Forms To Avoid Duplication
     def navigate_to_ticket(self, req, tic=None):
-        self.log("Navigating To Ticket With Request: " + req)
-        self.driver.get(self.req_url)
-        elements = self.driver.find_elements(By.CLASS_NAME, "main-column")
-        for e in elements:
-            if req in e.text: 
-                self.log("Found Request " + req)
-                e.find_element(By.PARTIAL_LINK_TEXT, "Mainframe").click()
-                
-                ritm = self.driver.find_element(By.PARTIAL_LINK_TEXT, "RITM")
-                if ritm.text == tic: self.log("Ticket Verified " + ritm.text)
-                ritm.click()
+        super().navigate_to_ticket(req, "Mainframe", tic=tic)
 
-                return True
-        return False
-
-    #This method should be added to either the ServiceNow Class or a Super Class For Forms To Avoid Duplication
-    def get_approvers(self):
-        self.log("Finding Approvers")
-        els = self.driver.find_elements(By.CLASS_NAME, "col-xs-6")
-        alt = self.driver.find_elements(By.CSS_SELECTOR, ".col-xs-1 > span")
-        app = []
-        for i, e in enumerate(els): 
-            app.append((e.text.split("\n")[0], alt[i].get_attribute("alt")))
-        for a in app: 
-            self.log("Found Approver %s with status %s" % a)
-        return app
-
-    #This method should be added to either the ServiceNow Class or a Super Class For Forms To Avoid Duplication
-    def approve_ticket(self, approver, ticket, request):
+    def get_chain(self, app, typ):
         user = self.user
-        self.log("Approving Ticket for " + self.user)
-        mf.impersonate(approver)
+        self.log("Finding Chain For " + typ + " Application " + app)
+        mf.impersonate("Sagar Saxena")
 
-        self.log("Navigating to Ticket " + ticket)
-        self.driver.get(self.temp_app_url)
-        els = self.driver.find_elements(By.CSS_SELECTOR, "li:nth-child(9) > a > span:nth-child(1)")
-        for el in els:
-            if "my approval needed" in el.text.lower(): 
-                break
-        el.click()
-        #self.driver.get(self.app_url)
-        self.driver.find_element(By.PARTIAL_LINK_TEXT, ticket).click()
+        self.log("Navigating to Crosswalk Table")
+        self.driver.find_element(By.ID, "filter").send_keys("Access Management Crosswalk")
+        time.sleep(self.expl_wait)
+        self.driver.find_element(By.CSS_SELECTOR, "#gsft_nav > div > magellan-favorites-list > ul > li.sn-widget.ng-scope.selected > div > div:nth-child(1) > a > div:nth-child(2) > span").click()
         time.sleep(self.expl_wait)
 
-        self.log("Approving Ticket " + ticket)
-        self.driver.find_element(By.NAME, "approve").click()
-        mf.impersonate(user)
-
-    def chain_approval(self, ticket, request):
-        chain = []
-        while True:
-            mf.navigate_to_ticket(request, ticket)
-            apps = mf.get_approvers()
-            apps = [a[0] for a in apps if a[1] == "Requested"]
-            if len(apps) <= 0: break
-
-            mf.approve_ticket(apps[0], ticket, request)
-            self.log("CHAIN " + str(len(chain)) + ": " + apps[0]) 
-            
-            chain.append(apps[0])
-            self.log("Waiting One Minute For Approval Process")
-            time.sleep(60)
-        return chain
-
+        self.log("Locating Row")
+        self.driver.execute_script("document.getElementById(\"u_access_management_crosswalk_filter_toggle_image\").click()")
+        self.driver.find_element(By.ID, "select2-chosen-2").click()
+        self.driver.find_element(By.ID, "s2id_autogen2_search").send_keys("Approval For Access To")
+        self.driver.find_element(By.ID, "s2id_autogen2_search").send_keys(Keys.ENTER)
+        
+    def verify_chain(self, app, typ, chain):
+        return
 
 if __name__ == '__main__':
     chrome_driver_path = os.path.join(".", "chromedriver.exe")
@@ -190,7 +135,8 @@ if __name__ == '__main__':
     mf.select_application("FIN", typ="student")
     ticket, request = mf.submit_form(True)
     mf.navigate_to_ticket(request, ticket)
-    mf.chain_approval(ticket, request)
+    chain = mf.chain_approval(ticket, request)
+    #mf.get_chain("ADM", "student")
 
     input("Hit Enter To Close Page")
     driver.quit()
