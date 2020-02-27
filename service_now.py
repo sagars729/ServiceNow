@@ -40,6 +40,13 @@ class ServiceNow():
             self.driver.get(self.home_page)
             tol-=1
 
+    def leave_form(self):
+        self.driver.get(self.home_page)
+        try:
+            self.driver.switchTo().alert().accept();
+        except:
+            self.log("No Block Found")
+		
     def login(self, directory_id=None, password=None):
     	self.log("Checking that user is logged in")
     	self.driver.get(self.home_page)
@@ -92,7 +99,7 @@ class ServiceNow():
     def check_submit(self):
         self.log("Checking That Form Was Submitted")
         elements = self.driver.find_elements(By.PARTIAL_LINK_TEXT, "RITM")
-        if len(elements) > 0: return None, None
+        if len(elements) <= 0: return None, None
 
         ticket = self.driver.find_element(By.PARTIAL_LINK_TEXT, "RITM").text
         self.log("Ticket: " + ticket)
