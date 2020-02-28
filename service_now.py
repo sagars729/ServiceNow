@@ -15,6 +15,7 @@ from getpass import getpass
 class ServiceNow():
     log_id = "ServiceNow"
     auth_page = "shib.idm.umd.edu"
+    side_door = "https://umddev.service-now.com/side_door.do"
     home_page = "https://umddev.service-now.com"
     
     impl_wait = 30
@@ -46,7 +47,22 @@ class ServiceNow():
             self.driver.switchTo().alert().accept();
         except:
             self.log("No Block Found")
-		
+    
+    def side_door_login(self):
+        self.log("Logging in through side door")
+        self.driver.get(self.side_door)
+        
+        with open("secret.txt","r") as f:
+            creds = [line.split("\n")[0] for line in f]
+            self.driver.switch_to.frame(self.driver.find_element(By.ID, "gsft_main"))
+            self.driver.find_element(By.ID, "user_name").send_keys(creds[0])
+            self.driver.find_element(By.ID, "user_password").send_keys(creds[1])
+            self.driver.find_element(By.ID, "sysverb_login").click()
+            self.driver.switch_to.default_content()
+            f.close()
+
+        self.log("Logged in through side door")
+
     def login(self, directory_id=None, password=None):
     	self.log("Checking that user is logged in")
     	self.driver.get(self.home_page)
@@ -54,7 +70,7 @@ class ServiceNow():
     
     	self.log("Requesting user credentials for login")
     	if not directory_id: directory_id = input("Directory ID: ")
-    	if not password: password = getpass()
+    	if not password: password = getpass()#input("Password")
     
     	self.log("Logging in as " + directory_id)
     	self.driver.find_element(By.ID, "username").send_keys(directory_id)

@@ -9,6 +9,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 import os
+import sys
+import traceback
 from service_now import ServiceNow
 
 class Mainframe(ServiceNow):
@@ -22,6 +24,9 @@ class Mainframe(ServiceNow):
     envs = {"development" : 2,
             "production" : 3,
             "both" : 4}
+    accs = {"read" : 2,
+            "update" : 3,
+            "alter" : 4}
     apps = {"student": ["adm", "fin", "grd", "ies", "ori", "res", "sar", "sgc", "sis", "ssp"],
             "financial": ["pro", "rfe"],
             "business": ["cop", "edb", "mtr", "pay", "phr", "tvl"],
@@ -75,8 +80,28 @@ class Mainframe(ServiceNow):
         self.driver.find_element(By.ID, "sp_formfield_reason_of_request_" + typ.lower()).click()
         self.driver.find_element(By.ID, "sp_formfield_reason_of_request_" + typ.lower()).send_keys(res)
 
-    def select_specific_dataset():
-        pass
+    def select_specific_dataset(self, pre, access, ds, res=""):
+        self.log("Selecting dataset %s.%s with access %s" % (pre, ds, access))
+        self.driver.find_element(By.CSS_SELECTOR, ".m-r").click()
+       
+        self.log("Filling prefix %s" % pre)
+        self.driver.find_element(By.CSS_SELECTOR, "#s2id_sp_formfield_dataset_prefix > a").click()
+        self.driver.find_element(By.CSS_SELECTOR, "#select2-drop > div > input").send_keys(pre)
+        time.sleep(self.expl_wait)
+        self.driver.find_element(By.CSS_SELECTOR, "#select2-drop > div > input").send_keys(Keys.ENTER)
+    
+        self.log("Selecting access %s" % access)
+        self.driver.find_element(By.CSS_SELECTOR, "#sp_formfield_dataset_access_type > label:nth-child(%d) > span" % self.accs[access.lower()]).click()
+        
+        self.log("Selecting dataset %s.%s" % (pre, ds))
+        self.driver.find_element(By.ID, "sp_formfield_dataset_name").click()
+        self.driver.find_element(By.ID, "sp_formfield_dataset_name").send_keys(ds)
+        
+        self.log("Filling reason for access")
+        self.driver.find_element(By.ID, "sp_formfield_dataset_reason_for_access").click()
+        self.driver.find_element(By.ID, "sp_formfield_dataset_reason_for_access").send_keys(res)
+        
+        self.driver.find_element(By.CSS_SELECTOR, "div.modal-footer.ng-scope > .btn-primary").click()
 
     #This method should be added to either the ServiceNow Class or a Super Class For Forms To Avoid Duplication
     #EXPLICIT WAIT SHOULD BE REPLACED
@@ -117,26 +142,30 @@ class Mainframe(ServiceNow):
         self.driver.find_element(By.ID, "select2-chosen-2").click()
         self.driver.find_element(By.ID, "s2id_autogen2_search").send_keys("Approval For Access To")
         self.driver.find_element(By.ID, "s2id_autogen2_search").send_keys(Keys.ENTER)
-        
+         
     def verify_chain(self, app, typ, chain):
         return
 
 if __name__ == '__main__':
     chrome_driver_path = os.path.join(".", "chromedriver.exe")
     driver = webdriver.Chrome()#executable_path=chrome_driver_path)
-    
-    mf = Mainframe(driver)
-    mf.login()
-    mf.impersonate("Jess Jacobson")
-    mf.navigate_to_form()
-    mf.enter_manager("Scott Gibson")
-    mf.select_environment("Development")
-    mf.select_application("ADM", "this is a reason to request access", typ="student")
-    mf.select_application("FIN", typ="student")
-    ticket, request = mf.submit_form(True)
-    mf.navigate_to_ticket(request, ticket)
-    chain = mf.chain_approval(ticket, request)
-    #mf.get_chain("ADM", "student")
+
+    try:
+        mf = Mainframe(driver)
+        mf.side_door_login()
+        mf.impersonate("Jess Jacobson")
+        mf.navigate_to_form()
+        mf.enter_manager("Scott Gibson")
+        mf.select_environment("Development")
+        mf.select_application("ADM", "this is a reason to request access", typ="student")
+        mf.select_application("FIN", typ="student")
+        mf.select_specific_dataset("ADM", "Read", "test", "this is a reason to request access")
+        ticket, request = mf.submit_form(True)
+        mf.navigate_to_ticket(request, ticket)
+        chain = mf.chain_approval(ticket, request)
+        #mf.get_chain("ADM", "student")
+    except:
+        traceback.print_exc(file=sys.stdout)
 
     input("Hit Enter To Close Page")
     driver.quit()
