@@ -22,3 +22,15 @@ export PYTHONPATH="."
 echo -e "local_username\nlocal_password" > secret.txt
 pytest
 ```
+
+If you want more verbose output, consider adding the -s flag to pytest which enables all logs to print regardless of whether or not an error was encountered.
+`pytest -s`
+
+## Interpreting Results
+
+If a test fails, there are usually two major reasons for this result:
+
+1. The functionality of the application is flawed and a bug has been found
+2. The functionality of the aplication has changed and the tests must be updated
+
+**Usually**, if an AssertionError has caused the failure, a bug has been found; otherwise the tests must be updated. This **is not true in all cases** but can be used as a baseline for evaluating the results of pytest. 
