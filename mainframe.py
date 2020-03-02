@@ -104,6 +104,12 @@ class Mainframe(ServiceNow):
         
         self.driver.find_element(By.CSS_SELECTOR, "div.modal-footer.ng-scope > .btn-primary").click()
 
+    def get_environment_help(self):
+        return self.driver.find_element(By.CSS_SELECTOR, "#environments > div > div > div").text
+    
+    def get_dataset_help(self):
+        return self.driver.find_element(By.CSS_SELECTOR, "#specific_datasets_instructions > div > span > div > section").text
+
     #This method should be added to either the ServiceNow Class or a Super Class For Forms To Avoid Duplication
     #EXPLICIT WAIT SHOULD BE REPLACED
     def submit_form(self, check=False):

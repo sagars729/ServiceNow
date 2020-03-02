@@ -20,7 +20,7 @@ except:
 
 
 chrome_driver_path = os.path.join(".", "chromedriver.exe")
-headless = True
+headless = False
 
 def init(headless = False):
     options = webdriver.ChromeOptions()
@@ -118,6 +118,7 @@ def test_c2_2():
     mf.submit_form(False)
     ticket, request = mf.check_submit()
     assert(ticket != None)    
+    mf.driver.quit()
 
 def test_c2_3():
     mf = init(headless)
@@ -129,7 +130,8 @@ def test_c2_3():
  
     mf.submit_form(False)
     ticket, request = mf.check_submit()
-    assert(ticket != None)    
+    assert(ticket != None)     
+    mf.driver.quit()
 
 def test_c2_4():
     mf = init(headless)
@@ -140,3 +142,26 @@ def test_c2_4():
     mf.submit_form(False)
     ticket, request = mf.check_submit()
     assert(ticket == None)    
+    mf.driver.quit()
+
+def test_c7_environment_help():
+    mf = init(headless)
+    mf.navigate_to_form()
+    mf.enter_manager("Scott Gibson")
+    mf.select_environment("Development")
+    assert(mf.get_environment_help() != None)
+    
+    mf.select_environment("Production")
+    assert(mf.get_environment_help() != None)
+    mf.driver.quit()
+
+def test_c8_dataset_help():
+    mf = init(headless)
+    mf.navigate_to_form()
+    mf.enter_manager("Scott Gibson")
+    mf.select_environment("Development")
+    assert(mf.get_dataset_help() != None)
+    
+    mf.select_environment("Production")
+    assert(mf.get_dataset_help() != None)
+    mf.driver.quit()
