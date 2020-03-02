@@ -85,6 +85,7 @@ class Mainframe(ServiceNow):
         self.driver.find_element(By.CSS_SELECTOR, ".m-r").click()
        
         self.log("Filling prefix %s" % pre)
+        time.sleep(self.expl_wait)
         self.driver.find_element(By.CSS_SELECTOR, "#s2id_sp_formfield_dataset_prefix > a").click()
         self.driver.find_element(By.CSS_SELECTOR, "#select2-drop > div > input").send_keys(pre)
         time.sleep(self.expl_wait)
