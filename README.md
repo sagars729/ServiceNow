@@ -24,7 +24,12 @@ pytest
 ```
 
 If you want more verbose output, consider adding the -s flag to pytest which enables all logs to print regardless of whether or not an error was encountered.
+
 `pytest -s`
+
+If you want to run the tests without opening the Chrome browser (i.e. headless mode), run this command before you run pytest:
+
+`export headless=True`
 
 ## Interpreting Results
 
