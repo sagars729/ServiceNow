@@ -20,9 +20,9 @@ except:
 
 
 chrome_driver_path = os.path.join(".", "chromedriver.exe")
-headless = False
+headless = os.environ["HEADLESS"] == 'True' 
 
-def init(headless = False):
+def init():
     options = webdriver.ChromeOptions()
     options.add_argument("--disable-popup-blocking")
 
@@ -41,7 +41,7 @@ def test_sanity():
     assert(1==1)
 
 def test_c1_required_fields_1():
-    mf = init(headless)
+    mf = init()
     mf.navigate_to_form()
     mf.enter_manager("Scott Gibson")
     mf.select_environment("Development")
@@ -53,7 +53,7 @@ def test_c1_required_fields_1():
     mf.driver.quit()
 
 def test_c1_required_fields_2():
-    mf = init(headless)
+    mf = init()
     mf.navigate_to_form()
     mf.select_environment("Development")
     mf.select_application("ADM", "this is a reason to request access", typ="student")
@@ -64,7 +64,7 @@ def test_c1_required_fields_2():
     mf.driver.quit()
 
 def test_c1_required_fields_4():
-    mf = init(headless)
+    mf = init()
     mf.navigate_to_form()
     mf.enter_manager("Scott Gibson")
     mf.select_application("ADM", "this is a reason to request access", typ="student")
@@ -75,7 +75,7 @@ def test_c1_required_fields_4():
     mf.driver.quit()
 
 def test_c1_required_fields_5():
-    mf = init(headless)
+    mf = init()
     mf.navigate_to_form()
     mf.enter_manager("Scott Gibson")
     mf.select_environment("Development")
@@ -95,7 +95,7 @@ def try_submit(mf):
         print("Caught NoSuchElementException - Passed")
 
 def test_c1_required_fields_6():
-    mf = init(headless)
+    mf = init()
     mf.navigate_to_form()
     mf.enter_manager("Scott Gibson")
     mf.select_environment("Development")
@@ -109,7 +109,7 @@ def test_c1_required_fields_6():
     mf.driver.quit()
 
 def test_c2_2():
-    mf = init(headless)
+    mf = init()
     mf.navigate_to_form()
     mf.enter_manager("Scott Gibson")
     mf.select_environment("Development") 
@@ -121,7 +121,7 @@ def test_c2_2():
     mf.driver.quit()
 
 def test_c2_3():
-    mf = init(headless)
+    mf = init()
     mf.navigate_to_form()
     mf.enter_manager("Scott Gibson")
     mf.select_environment("Development") 
@@ -134,7 +134,7 @@ def test_c2_3():
     mf.driver.quit()
 
 def test_c2_4():
-    mf = init(headless)
+    mf = init()
     mf.navigate_to_form()
     mf.enter_manager("Scott Gibson")
     mf.select_environment("Development") 
@@ -145,7 +145,7 @@ def test_c2_4():
     mf.driver.quit()
 
 def test_c7_environment_help():
-    mf = init(headless)
+    mf = init()
     mf.navigate_to_form()
     mf.enter_manager("Scott Gibson")
     mf.select_environment("Development")
@@ -156,7 +156,7 @@ def test_c7_environment_help():
     mf.driver.quit()
 
 def test_c8_dataset_help():
-    mf = init(headless)
+    mf = init()
     mf.navigate_to_form()
     mf.enter_manager("Scott Gibson")
     mf.select_environment("Development")
