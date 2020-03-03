@@ -6,6 +6,9 @@
 
 This repository details my project for the Division of Information Technology at the University of Maryland on automating Service Now testing using Selenium WebDriver.
 
+1. [Running This Project](#Running-This-Project)
+2. [Interpreting Results](#Interpreting-Results)
+
 ## Running This Project
 
 If you are an employee at DIT or if you have the correct credentials to run this project, follow the steps below:
