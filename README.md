@@ -10,6 +10,16 @@ This repository details my project for the Division of Information Technology at
 2. [Interpreting Results](#Interpreting-Results)
 3. [Writing Custom Tests](#Writing-Custom-Tests)
 
+## Prerequisites
+
+1. Install [Chrome](https://www.google.com/chrome/)
+2. Install [ChromeDriver](https://chromedriver.chromium.org/getting-started)
+3. Install [Python3](https://www.python.org/downloads/)
+4. Install the required packages 
+```python
+pip install -r requirements.txt
+```
+
 ## Running This Project
 
 If you are an employee at DIT or if you have the correct credentials to run this project, follow the steps below:
@@ -48,8 +58,8 @@ If a test fails, there are usually two major reasons for this result:
 
 To write a custom pytest, perform the following steps:
 
-1. Create a file named test_(your_test_name).py in the Tests folder.
-2. Import the following packages
+1. Create a file named test_(your_test_file).py in the Tests folder.
+2. Import the following packages in your python file
 
 ```python
 import time
@@ -96,12 +106,12 @@ sn.login()
 
 5. Write a function for your custom test
 ```python
-def test_my_test_name():
+def test_your_test_name():
   # Write your test here
 ```
 
 6. Run your test by navigating to the ServiceNow directory and running pytest
 ```bash
 export PYTHONPATH="."
-pytest
+pytest Tests/test_your_test_file.py
 ```
