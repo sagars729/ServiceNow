@@ -4,7 +4,7 @@
   <img src="/pytest_terminal.png" alt="Terminal Output"/>
 </p>
 
-This repository details my project for the Division of Information Technology at the University of Maryland on automating Service Now testing using Selenium WebDriver.
+This repository details my project for the Division of Information Technology at the University of Maryland on automating Service Now testing using Selenium WebDriver. This project has been moved to Bitbucket. If you have the correct authorization, access this project [here](https://bitbucket.umd.edu/projects/SOFTWAREDEVELOPMENTSUPPORT/repos/servicenowautomation/browse)
 
 1. [Running This Project](#Running-This-Project)
 2. [Interpreting Results](#Interpreting-Results)
