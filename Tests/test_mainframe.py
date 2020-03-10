@@ -20,7 +20,7 @@ except:
 
 
 chrome_driver_path = os.path.join(".", "chromedriver.exe")
-headless = os.environ["HEADLESS"] == 'True' 
+headless = os.environ["HEADLESS"].lower() == 'true' 
 
 def init():
     options = webdriver.ChromeOptions()
