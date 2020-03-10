@@ -102,7 +102,15 @@ def test_c1_required_fields_6():
     
     mf.select_specific_dataset("", "read", "", "")
     try_submit(mf)
+    
+    mf.driver.quit()
 
+def test_c1_required_fields_6_2():
+    mf = init()
+    mf.navigate_to_form()
+    mf.enter_manager("Scott Gibson")
+    mf.select_environment("Development")
+    
     mf.select_specific_dataset("", "read", "", "reason")
     try_submit(mf)
 
