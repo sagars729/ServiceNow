@@ -4,7 +4,9 @@
   <img src="/pytest_terminal.png" alt="Terminal Output"/>
 </p>
 
-This repository details my project for the Division of Information Technology at the University of Maryland on automating Service Now testing using Selenium WebDriver. This project has been moved to Bitbucket. If you have the correct authorization, access this project [here](https://bitbucket.umd.edu/projects/SOFTWAREDEVELOPMENTSUPPORT/repos/servicenowautomation/browse)
+This repository details my project for the Division of Information Technology at the University of Maryland on automating Service Now testing using Selenium WebDriver. 
+
+This is the latest version of this project, but it is also available on Bitbucket. If you have the correct authorization, you can access this project [here](https://bitbucket.umd.edu/projects/SOFTWAREDEVELOPMENTSUPPORT/repos/servicenowautomation/browse).
 
 1. [Running This Project](#Running-This-Project)
 2. [Interpreting Results](#Interpreting-Results)
@@ -33,6 +35,7 @@ If you are an employee at DIT or if you have the correct credentials to run this
 git clone git@github.com:sagars729/ServiceNow.git
 cd /YourPathTo/ServiceNow
 export PYTHONPATH="."
+export HEADLESS=false
 echo -e "local_username\nlocal_password" > secret.txt
 pytest
 ```
@@ -43,7 +46,7 @@ If you want more verbose output, consider adding the -s flag to pytest which ena
 
 If you want to run the tests without opening the Chrome browser (i.e. headless mode), run this command before you run pytest:
 
-`export HEADLESS=True`
+`export HEADLESS=true`
 
 ## Interpreting Results
 
