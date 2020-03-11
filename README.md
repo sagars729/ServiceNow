@@ -36,7 +36,7 @@ pip install -r requirements.txt
 ```bash 
 alias python='winpty ~/Downloads/python-3.8.2-embed-amd64/python.exe' #Replace this with your path
 alias pip='python -m pip'
-alias pytest='winpty ~/Downloads/python-3.8.2-embed-amd64/Scripts/pytest.exe'
+alias pytest='winpty ~/Downloads/python-3.8.2-embed-amd64/Scripts/pytest.exe' #Replace this with your path
 ```
 5. Run the following line to allow the changes to take effect
 ```bash
