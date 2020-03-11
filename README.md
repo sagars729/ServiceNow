@@ -8,9 +8,10 @@ This repository details my project for the Division of Information Technology at
 
 This is the latest version of this project, but it is also available on Bitbucket. If you have the correct authorization, you can access this project [here](https://bitbucket.umd.edu/projects/SOFTWAREDEVELOPMENTSUPPORT/repos/servicenowautomation/browse).
 
-1. [Running This Project](#Running-This-Project)
-2. [Interpreting Results](#Interpreting-Results)
-3. [Writing Custom Tests](#Writing-Custom-Tests)
+1. [Prerequisites](#Prerequisites)
+2. [Running This Project](#Running-This-Project)
+3. [Interpreting Results](#Interpreting-Results)
+4. [Writing Custom Tests](#Writing-Custom-Tests)
 
 ## Prerequisites
 
@@ -49,13 +50,12 @@ Lib/site-packages/
 
 If you are an employee at DIT or if you have the correct credentials to run this project, follow the steps below:
 
-1. Navigate to this repository and add the repository to the Python Path
+1. Navigate to this repository and enable HEADLESS as false
 2. Create a file called "secret.txt" in this repository. Put the username of a local ServiceNow user on the first line and the password of that user on the second line.
 3. Run pytest
 
 ```bash
 cd /YourPathTo/ServiceNow
-export PYTHONPATH="."
 export HEADLESS=false
 echo -e "local_username\nlocal_password" > secret.txt
 pytest
@@ -99,13 +99,12 @@ from selenium.common.exceptions import NoSuchElementException
 
 import os
 import pytest
-import conftest
 ```
 
 3. Use the following code to create a ServiceNow object
 
 ```python
-headless = False
+headless = os.environ["HEADLESS"].lower() == 'true'
 
 options = webdriver.ChromeOptions()
 options.add_argument("--disable-popup-blocking")
@@ -136,6 +135,6 @@ def test_your_test_name():
 
 6. Run your test by navigating to the ServiceNow directory and running pytest
 ```bash
-export PYTHONPATH="."
+export HEADLESS=false
 pytest Tests/test_your_test_file.py
 ```
