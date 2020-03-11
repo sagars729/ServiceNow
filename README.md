@@ -8,26 +8,16 @@ This repository details my project for the Division of Information Technology at
 
 This is the latest version of this project, but it is also available on Bitbucket. If you have the correct authorization, you can access this project [here](https://bitbucket.umd.edu/projects/SOFTWAREDEVELOPMENTSUPPORT/repos/servicenowautomation/browse).
 
-1. [Running This Project](#Running-This-Project)
-2. [Interpreting Results](#Interpreting-Results)
-3. [Writing Custom Tests](#Writing-Custom-Tests)
+1. [Prerequisites](#Prerequisites)
+2. [Running This Project](#Running-This-Project)
+3. [Interpreting Results](#Interpreting-Results)
+4. [Writing Custom Tests](#Writing-Custom-Tests)
 
 ## Prerequisites
 
 1. Install [Chrome](https://www.google.com/chrome/)
 2. Install [ChromeDriver](https://chromedriver.chromium.org/getting-started)
 3. Install [Python3](https://www.python.org/downloads/). 
-
-NOTE: I installed Python3 on a server without admin rights by using the [embedded distribution](https://www.python.org/ftp/python/3.8.2/python-3.8.2-embed-amd64.zip), manually [installing pip](https://pip.pypa.io/en/stable/installing/), and then [hacking pip](https://stackoverflow.com/questions/42666121/pip-with-embedded-python) to make it work with the embedded distribution. To allow python to run on GitBash, I also modified the ~/.bashrc file and added the following lines:
-```bash 
-alias python='winpty ~/Downloads/python-3.8.2-embed-amd64/python.exe'
-alias pip='python -m pip'
-```
-Finally, I ran this line in git bash to allow my changes to come into effect:
-```bash
-source ~/.bashrc
-```
-
 4. Clone this repository git@github.com:sagars729/ServiceNow.git
 ```bash
 git clone git@github.com:sagars729/ServiceNow.git
@@ -37,29 +27,55 @@ git clone git@github.com:sagars729/ServiceNow.git
 pip install -r requirements.txt
 ```
 
+#### Using Embedded Python3 (on Windows Server)
+
+1. Instal Python3 using the [embedded distribution](https://www.python.org/ftp/python/3.8.2/python-3.8.2-embed-amd64.zip)
+2. Manually [install pip](https://pip.pypa.io/en/stable/installing/)
+3. [Hack pip](https://stackoverflow.com/questions/42666121/pip-with-embedded-python) to make it work with the embedded distribution. 
+4. To allow python to run on GitBash, modify the ~/.bashrc file and added the following lines :
+```bash 
+alias python='winpty ~/Downloads/python-3.8.2-embed-amd64/python.exe' #Replace this with your path
+alias pip='python -m pip'
+alias pytest='winpty ~/Downloads/python-3.8.2-embed-amd64/Scripts/pytest.exe'
+```
+5. Run the following line to allow the changes to take effect
+```bash
+source ~/.bashrc
+```
+6. Modify the path in your_path_to_embedded_python_folder/python38._pth and add the following line
+```python
+Lib/site-packages/
+```
 ## Running This Project
 
 If you are an employee at DIT or if you have the correct credentials to run this project, follow the steps below:
 
-1. Navigate to this repository and add the repository to the Python Path
+1. Navigate to this repository
 2. Create a file called "secret.txt" in this repository. Put the username of a local ServiceNow user on the first line and the password of that user on the second line.
 3. Run pytest
 
 ```bash
 cd /YourPathTo/ServiceNow
-export PYTHONPATH="."
-export HEADLESS=false
 echo -e "local_username\nlocal_password" > secret.txt
 pytest
 ```
 
 If you want more verbose output, consider adding the -s flag to pytest which enables all logs to print regardless of whether or not an error was encountered.
 
-`pytest -s`
+```bash
+pytest -s
+```
 
 If you want to run the tests without opening the Chrome browser (i.e. headless mode), run this command before you run pytest:
 
-`export HEADLESS=true`
+```bash
+export HEADLESS=true
+```
+
+Alternatively, you can disable headless mode by running this command before you run pytest:
+```bash
+export HEADLESS=false
+```
 
 ## Interpreting Results
 
@@ -91,13 +107,12 @@ from selenium.common.exceptions import NoSuchElementException
 
 import os
 import pytest
-import conftest
 ```
 
 3. Use the following code to create a ServiceNow object
 
 ```python
-headless = False
+headless = os.environ["HEADLESS"].lower() == 'true'
 
 options = webdriver.ChromeOptions()
 options.add_argument("--disable-popup-blocking")
@@ -128,6 +143,5 @@ def test_your_test_name():
 
 6. Run your test by navigating to the ServiceNow directory and running pytest
 ```bash
-export PYTHONPATH="."
 pytest Tests/test_your_test_file.py
 ```
