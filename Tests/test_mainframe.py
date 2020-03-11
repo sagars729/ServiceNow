@@ -11,16 +11,19 @@ from selenium.common.exceptions import NoSuchElementException
 
 import os
 import pytest
-import conftest
+#import conftest
+import sys
 try:
     from mainframe import Mainframe
 except:
-    print("Module mainframe not found. Try running \"export PYTHONPATH=\".\"\" on the command line.")
-    sys.exit(0)
+    print("mainframe module not found\nTrying new path: .")
+    sys.path.insert(0, os.path.abspath("."))
+    from mainframe import Mainframe
 
 
 chrome_driver_path = os.path.join(".", "chromedriver.exe")
-headless = os.environ["HEADLESS"].lower() == 'true' 
+try: headless = os.environ["HEADLESS"].lower() == 'true' 
+except: headless = False
 
 def init():
     options = webdriver.ChromeOptions()
