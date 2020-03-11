@@ -16,9 +16,24 @@ This is the latest version of this project, but it is also available on Bitbucke
 
 1. Install [Chrome](https://www.google.com/chrome/)
 2. Install [ChromeDriver](https://chromedriver.chromium.org/getting-started)
-3. Install [Python3](https://www.python.org/downloads/)
-4. Install the required packages 
-```python
+3. Install [Python3](https://www.python.org/downloads/). 
+
+NOTE: I installed Python3 on a server without admin rights by using the [embedded distribution](https://www.python.org/ftp/python/3.8.2/python-3.8.2-embed-amd64.zip), manually [installing pip](https://pip.pypa.io/en/stable/installing/), and then [hacking pip](https://stackoverflow.com/questions/42666121/pip-with-embedded-python) to make it work with the embedded distribution. To allow python to run on GitBash, I also modified the ~/.bashrc file and added the following lines:
+```bash 
+alias python='winpty ~/Downloads/python-3.8.2-embed-amd64/python.exe'
+alias pip='python -m pip'
+```
+Finally, I ran this line in git bash to allow my changes to come into effect:
+```bash
+source ~/.bashrc
+```
+
+4. Clone this repository git@github.com:sagars729/ServiceNow.git
+```bash
+git clone git@github.com:sagars729/ServiceNow.git
+```
+5. Install the required packages 
+```bash
 pip install -r requirements.txt
 ```
 
@@ -26,13 +41,11 @@ pip install -r requirements.txt
 
 If you are an employee at DIT or if you have the correct credentials to run this project, follow the steps below:
 
-1. Clone this repository git@github.com:sagars729/ServiceNow.git
-2. Navigate to this repository and add the repository to the Python Path
-3. Create a file called "secret.txt" in this repository. Put the username of a local ServiceNow user on the first line and the password of that user on the second line.
-4. Run pytest
+1. Navigate to this repository and add the repository to the Python Path
+2. Create a file called "secret.txt" in this repository. Put the username of a local ServiceNow user on the first line and the password of that user on the second line.
+3. Run pytest
 
 ```bash
-git clone git@github.com:sagars729/ServiceNow.git
 cd /YourPathTo/ServiceNow
 export PYTHONPATH="."
 export HEADLESS=false
