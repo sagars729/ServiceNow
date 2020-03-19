@@ -60,7 +60,7 @@ class ServiceNow():
             self.driver.find_element(By.ID, "sysverb_login").click()
             self.driver.switch_to.default_content()
             f.close()
-
+        self.driver.get(self.home_page)
         self.log("Logged in through side door")
 
     def login(self, directory_id=None, password=None):
