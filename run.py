@@ -10,12 +10,17 @@ import time
 
 from email.mime.text import MIMEText
 import base64
+from datetime import datetime
+
+import argparse
 
 def runtests():
-    os.system("winpty -Xallow-non-tty ~/Downloads/python-3.8.2-embed-amd64/Scripts/pytest.exe > log")
+    dt = time.time()
+    os.system("winpty -Xallow-non-tty ~/Downloads/python-3.8.2-embed-amd64/Scripts/pytest.exe -m debug > log")
     os.system("sed 's/\\?//g' log > log.txt")
     os.system("sed 's/\\x1b\\[[0-9;]*[a-zA-Z]//g' log.txt > log2.txt")
     os.system("mv log2.txt log.txt")
+    return time.time() - dt
 
 def get_service():
     creds = None
@@ -41,10 +46,10 @@ def get_service():
     service = build('gmail', 'v1', credentials=creds)
     return service
 
-def create_message(sender, to, subject, message_text):
+def create_message(subject, message_text):
   message = MIMEText(message_text)
-  message['to'] = to
-  message['from'] = sender
+  message['to'] = args.to
+  message['from'] = args.sender
   message['subject'] = subject
   raw = base64.urlsafe_b64encode(message.as_bytes())
   raw = raw.decode()
@@ -56,15 +61,23 @@ def send_message(service, user_id, message):
     print('Message Id: %s' % message['id'])
     return message
 
-service = get_service()
-message = create_message("sagardsaxena@gmail.com", "ssaxena1@terpmail.umd.edu", "Test", "Test")
-send_message(service, "me", message)
+def cycle(t, email=False):
+    while True:
+        dt = runtests()
+        if email:
+            service = get_service()
+            with open("log.txt", "r") as infile:
+                msg = infile.read()
+                infile.close()
+            message = create_message("Automated Pytest Report %s" % (datetime.now().strftime("%H:%M:%S")), msg) 
+            send_message(service, "me", message)
+        time.sleep(t - dt)
 
-
-#every = 3600 * 3
-#while True:
-#    dt = time.time()
-#    runtests()
-#    dt = time.time() - dt
-#    time.sleep(every - dt)
-
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='This program allows you to run automated tests and email logs at set intervals.')
+    parser.add_argument('--sender', type=str, default="sender@gmail.com", help="Email that sends the logs")
+    parser.add_argument('--to', type=str, default="receiver@gmail.com", help="Email that receives the logs")
+    parser.add_argument('--interval', type=int, default=3, help="Interval In Hours")
+    args = parser.parse_args()
+    
+    cycle(3600*args.interval, True)
