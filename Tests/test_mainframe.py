@@ -37,9 +37,10 @@ def init():
     driver = webdriver.Chrome(options=options)
     mf = Mainframe(driver)
     mf.side_door_login()
-    mf.impersonate("Jess Jacobson")
+    mf.impersonate("Sagar Saxena")
     return mf
 
+@pytest.mark.debug
 def test_sanity():
     assert(1==1)
 
