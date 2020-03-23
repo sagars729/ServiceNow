@@ -12,6 +12,7 @@ This is the latest version of this project, but it is also available on Bitbucke
 2. [Running This Project](#Running-This-Project)
 3. [Interpreting Results](#Interpreting-Results)
 4. [Writing Custom Tests](#Writing-Custom-Tests)
+5. [Running At Intervals](#Running-At-Intervals)
 
 ## Prerequisites
 
@@ -145,3 +146,23 @@ def test_your_test_name():
 ```bash
 pytest Tests/test_your_test_file.py
 ```
+
+## Running At Intervals
+
+To run this project at intervals, instead of running this project with pytest, run with the [run.py](/run.py) file instead and provide a command line argument for the interval (in hours). 
+
+```bash
+python run.py --interval 3
+```
+
+This project can also be configured to run at intervals and send an email of the logs at each interval:
+
+1. Download the [credentials](https://developers.google.com/gmail/api/quickstart/python) for enabling the Gmail API with your desired account.
+2. Run the above file with command line arguments for the sender and receiver:
+
+```bash
+python run.py --inverval 3 --sender sender@gmail.com --to receiver@gmail.com
+```
+
+A pop-up window should pop up and ask you to allow this application to access your gmail the first time you run this program.
+
