@@ -16,7 +16,7 @@ import argparse
 
 def runtests():
     dt = time.time()
-    os.system("winpty -Xallow-non-tty ~/Downloads/python-3.8.2-embed-amd64/Scripts/pytest.exe -m debug > log")
+    os.system("winpty -Xallow-non-tty ~/Downloads/python-3.8.2-embed-amd64/Scripts/pytest.exe > log")
     os.system("sed 's/\\?//g' log > log.txt")
     os.system("sed 's/\\x1b\\[[0-9;]*[a-zA-Z]//g' log.txt > log2.txt")
     os.system("mv log2.txt log.txt")
