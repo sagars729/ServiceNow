@@ -50,17 +50,17 @@ def goToDrumList(l):
 		if "/rw/listdrum" not in res.url: 
 			res.failure("Drum List Not Found")
 
-def search(l, checmical="acetone"):
+def search(l, chemical="acetone"):
 	with l.client.post("/rw/search/chemicalByName", data={"name": chemical}, catch_response=True) as res:
 		if "/rw/search/chemicalByName" not in res.url:
 			res.failure("Search Redirected Elsewhere")
 	
 def goToSearch(l):
-    with l.client.get("/rw/search/chemicalByName", catch_response=True) as res:
+	with l.client.get("/rw/search/chemicalByName", catch_response=True) as res:
 		if "/rw/search/chemicalByName" not in res.url:
 			res.failure("Search Page Not Found")
 
-def runSearch(l)
+def runSearch(l):
 	goToSearch(l)
 	search(l)
 
