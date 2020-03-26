@@ -2,3 +2,6 @@ __pycache__
 secret.txt
 debug.log
 auth.txt
+log*
+credentials.json
+token.pickle

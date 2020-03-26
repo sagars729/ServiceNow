@@ -37,9 +37,10 @@ def init():
     driver = webdriver.Chrome(options=options)
     mf = Mainframe(driver)
     mf.side_door_login()
-    mf.impersonate("Jess Jacobson")
+    mf.impersonate("Sagar Saxena")
     return mf
 
+@pytest.mark.sanity
 def test_sanity():
     assert(1==1)
 
@@ -108,13 +109,14 @@ def test_c1_required_fields_6():
     
     mf.driver.quit()
 
+@pytest.mark.debug
 def test_c1_required_fields_6_2():
     mf = init()
     mf.navigate_to_form()
     mf.enter_manager("Scott Gibson")
     mf.select_environment("Development")
     
-    mf.select_specific_dataset("", "read", "", "reason")
+    mf.select_specific_dataset("thisIsNotAValidDataset1234", "read", "", "reason")
     try_submit(mf)
 
     mf.driver.quit()
