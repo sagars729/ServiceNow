@@ -15,13 +15,30 @@ from datetime import datetime
 from ansi2html import Ansi2HTMLConverter as a2h
 import argparse
 
+import re
+from pandas import DataFrame as df
+
 conv = a2h()
+
+def analyze(text):
+    passed = re.compile(r"passed.*::(test.*)\x1b", re.IGNORECASE)
+    failed = re.compile(r"failed.*::(test.*) - (.*)\x1b", re.IGNORECASE)
+    passed = passed.findall(text)
+    failed = failed.findall(text)
+
+    failed = [(i[0], ("\033[33mWARNING\033[0m","\033[31mFAILED\033[0m")["assert" in i[1].lower()], i[1]) for i in failed]
+    passed = [(i, "\033[32mPASSED\033[0m", "") for i in passed]
+
+    frame = df(data=passed+failed, columns=["Test", "\033[37mStatus\033[0m", "Message"])
+
+    return frame.to_string()
+
 def runtests():
     dt = time.time()
     os.system("winpty -Xallow-non-tty ~/Downloads/python-3.8.2-embed-amd64/Scripts/pytest.exe -rA > log")
-    os.system("sed 's/\\?//g' log > log.txt")
-    os.system("sed 's/\\x1b\\[[0-9;]*[a-zA-Z]//g' log.txt > log2.txt")
-    os.system("mv log2.txt log.txt")
+    #os.system("sed 's/\\?//g' log > log.txt")
+    #os.system("sed 's/\\x1b\\[[0-9;]*[a-zA-Z]//g' log.txt > log2.txt")
+    #os.system("mv log2.txt log.txt")
     return time.time() - dt
 
 def get_service():
@@ -71,6 +88,7 @@ def cycle(t, email=False):
             service = get_service()
             with open("log", "r") as infile:
                 ansi = "".join(infile.readlines())
+                ansi = analyze(ansi) + "\n" + ansi 
                 html = conv.convert(ansi)
                 infile.close()
 
