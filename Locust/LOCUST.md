@@ -8,6 +8,11 @@ This performance test uses Locust to test the performance of ESSR: https://app.e
 ```bash
 pip install locustio
 ```
+3. Create a file for the authorization key
+```bash
+touch auth.txt
+echo "your_key_here" > auth.txt
+```
 
 ## Running The Test
 1. Run locust in the command line
