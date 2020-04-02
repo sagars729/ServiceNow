@@ -156,9 +156,9 @@ class ServiceNow():
             self.log("Found Approver %s with status %s" % a)
         return app
 
-    def approve_ticket(self, approver, ticket, request):
+    def approve_ticket(self, approver, ticket, request, reject = False, res="This is a reason to reject"):
         user = self.user
-        self.log("Approving Ticket for " + self.user)
+        self.log("%s Ticket for %s" %(("Approving", "Rejecting")[reject], self.user))
         self.impersonate(approver)
 
         self.log("Navigating to Ticket " + ticket)
@@ -172,10 +172,14 @@ class ServiceNow():
         self.driver.find_element(By.PARTIAL_LINK_TEXT, ticket).click()
         time.sleep(self.expl_wait)
 
-        self.log("Approving Ticket " + ticket)
-        self.driver.find_element(By.NAME, "approve").click()
+        self.log("%s Ticket %s" % (("Approving","Rejecting")[reject], ticket))
+        self.driver.find_element(By.NAME, ("approve", "reject")[reject]).click()
+    
+        if reject: 
+            self.driver.find_element(By.ID, "rejetreason").send_keys(res)
+            self.driver.find_elements(By.CSS_SELECTOR, "body > div.modal.fade.ng-isolate-scope.in > div > div > div > div.panel-footer.text-right > button.btn.btn-danger")[0].click()
         self.impersonate(user)
-
+    
     def chain_approval(self, ticket, request):
         chain = []
         while True:

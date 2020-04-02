@@ -40,6 +40,9 @@ def init():
     mf.impersonate("Sagar Saxena")
     return mf
 
+def cleanup_ticket(mf, approver, ticket, request):
+    mf.approve_ticket(approver, ticket, request, reject=True)
+
 @pytest.mark.sanity
 def test_sanity():
     assert(1==1)
@@ -54,6 +57,8 @@ def test_c1_required_fields_1():
     mf.submit_form(False)
     ticket, request = mf.check_submit()
     assert(ticket != None)
+    cleanup_ticket(mf, "Scott Gibson", ticket, request)
+
     mf.driver.quit()
 
 def test_c1_required_fields_2():
@@ -109,7 +114,6 @@ def test_c1_required_fields_6():
     
     mf.driver.quit()
 
-@pytest.mark.debug
 def test_c1_required_fields_6_2():
     mf = init()
     mf.navigate_to_form()
@@ -121,7 +125,7 @@ def test_c1_required_fields_6_2():
 
     mf.driver.quit()
 
-def test_c2_2():
+def test_c2_2_application():
     mf = init()
     mf.navigate_to_form()
     mf.enter_manager("Scott Gibson")
@@ -131,9 +135,11 @@ def test_c2_2():
     mf.submit_form(False)
     ticket, request = mf.check_submit()
     assert(ticket != None)    
+    
+    cleanup_ticket(mf, "Scott Gibson", ticket, request)
     mf.driver.quit()
 
-def test_c2_3():
+def test_c2_3_application_and_dataset():
     mf = init()
     mf.navigate_to_form()
     mf.enter_manager("Scott Gibson")
@@ -144,9 +150,11 @@ def test_c2_3():
     mf.submit_form(False)
     ticket, request = mf.check_submit()
     assert(ticket != None)     
+    
+    cleanup_ticket(mf, "Scott Gibson", ticket, request)
     mf.driver.quit()
 
-def test_c2_4():
+def test_c2_4_no_application_or_dataset():
     mf = init()
     mf.navigate_to_form()
     mf.enter_manager("Scott Gibson")
@@ -178,3 +186,52 @@ def test_c8_dataset_help():
     mf.select_environment("Production")
     assert(mf.get_dataset_help() != None)
     mf.driver.quit()
+
+def help_m1_approval_chain():
+    mf = init()
+    mf.navigate_to_form()
+    mf.enter_manager("Scott Gibson")
+    mf.select_environment("Development")
+    mf.select_application("ADM", "this is a reason to request access", typ="student")
+    mf.select_application("FIN", typ="student")
+    mf.select_application("PRO", "this is a reason to request access", typ="financial")
+    mf.select_application("RFE", typ="financial")
+    mf.submit_form(False)
+    ticket, request = mf.check_submit()
+    assert(ticket != None)
+    
+    chain = mf.chain_approval(ticket, request)
+    mf.driver.quit()
+    return chain
+
+def test_m1_approval_manager():
+    chain = help_m1_approval_chain()
+    st = set(chain)
+    assert("Scott Gibson" in st)
+
+
+def test_m1_approval_no_duplicate():
+    chain = help_m1_approval_chain()
+    st = set(chain)
+    assert(len(st) == len(chain) or len(chain) == 5)
+
+def test_m1_approval_adm():
+    chain = help_m1_approval_chain()
+    st = set(chain)
+    assert("Jing Jeng" in st)
+
+
+def test_m1_approval_fin():
+    chain = help_m1_approval_chain()
+    st = set(chain)
+    assert("Elwyn Fleming" in st)
+
+def test_m1_approval_pro():
+    chain = help_m1_approval_chain()
+    st = set(chain)
+    assert("Carrie Bredenkamp" in st)
+
+def test_m1_approval_rfe():
+    chain = help_m1_approval_chain()
+    st = set(chain)
+    assert("Carrie Bredenkamp" in st)
