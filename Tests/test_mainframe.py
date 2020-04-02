@@ -187,15 +187,14 @@ def test_c8_dataset_help():
     assert(mf.get_dataset_help() != None)
     mf.driver.quit()
 
-def help_m1_approval_chain():
+def help_m1_approval_chain(env="Development", apps={"student":["ADM", "FIN"], "financial":["PRO", "RFE"]}, res={"student":"this is a reason to request access", "financial": "this is a reason to request access"}):
     mf = init()
     mf.navigate_to_form()
     mf.enter_manager("Scott Gibson")
-    mf.select_environment("Development")
-    mf.select_application("ADM", "this is a reason to request access", typ="student")
-    mf.select_application("FIN", typ="student")
-    mf.select_application("PRO", "this is a reason to request access", typ="financial")
-    mf.select_application("RFE", typ="financial")
+    mf.select_environment(env)
+    for typ in apps:
+        for app in apps[typ]:
+            mf.select_application(app, res[typ], typ=typ)
     mf.submit_form(False)
     ticket, request = mf.check_submit()
     assert(ticket != None)
@@ -235,3 +234,23 @@ def test_m1_approval_rfe():
     chain = help_m1_approval_chain()
     st = set(chain)
     assert("Carrie Bredenkamp" in st)
+
+def test_m1_approval_prd_adm():
+    chain = help_m1_approval_chain(env="Production")
+    st = set(chain)
+    assert("Jesse Galve" in st)
+
+def test_m1_approval_prd_fin():
+    chain = help_m1_approval_chain(env="Production")
+    st = set(chain)
+    assert("Jesse Galve" in st or "Kim Viapiano" in st)
+
+def test_m1_approval_prd_rfe():
+    chain = help_m1_approval_chain(env="Production")
+    st = set(chain)
+    assert("Dave Rieger" in st)
+
+def test_m1_approval_prd_pro():
+    chain = help_m1_approval_chain(env="Production")
+    st = set(chain)
+    assert("Marty Newman" in st or "Chenise Patterson")
