@@ -236,21 +236,74 @@ def test_m1_approval_rfe():
     assert("Carrie Bredenkamp" in st)
 
 def test_m1_approval_prd_adm():
-    chain = help_m1_approval_chain(env="Production")
+    chain = help_m1_approval_chain(env="Production", apps={"student":["ADM"]}, res={"student":"this is a reason to request access"})
     st = set(chain)
     assert("Jesse Galve" in st)
 
 def test_m1_approval_prd_fin():
-    chain = help_m1_approval_chain(env="Production")
+    chain = help_m1_approval_chain(env="Production", apps={"student":["FIN"]}, res={"student":"this is a reason to request access"})
     st = set(chain)
     assert("Jesse Galve" in st or "Kim Viapiano" in st)
 
-def test_m1_approval_prd_rfe():
-    chain = help_m1_approval_chain(env="Production")
+@pytest.mark.debug
+def test_m2_reject_man():
+    mf = init()
+    mf.navigate_to_form()
+    mf.enter_manager("Scott Gibson")
+    mf.select_environment("Production")
+    mf.select_application("ADM", "this is a reason to request access", typ="student")
+    mf.submit_form(False)
+    ticket, request = mf.check_submit()
+    assert(ticket != None)
+    
+    chain = mf.chain_approval(ticket, request, [False])
     st = set(chain)
-    assert("Dave Rieger" in st)
+    assert("Jing Jeng" not in st)
 
-def test_m1_approval_prd_pro():
-    chain = help_m1_approval_chain(env="Production")
+    mf.driver.quit()
+
+@pytest.mark.debug
+def test_m2_reject_step_one():
+    mf = init()
+    mf.navigate_to_form()
+    mf.enter_manager("Scott Gibson")
+    mf.select_environment("Production")
+    mf.select_application("ADM", "this is a reason to request access", typ="student")
+    mf.submit_form(False)
+    ticket, request = mf.check_submit()
+    assert(ticket != None)
+    
+    chain = mf.chain_approval(ticket, request, [True, False])
     st = set(chain)
-    assert("Marty Newman" in st or "Chenise Patterson")
+    assert("Jesse Galve" not in st)
+
+    mf.driver.quit()
+
+def test_m4_approver_req():
+    mf = init()
+    mf.impersonate("Carrie Bredenkamp")
+    mf.navigate_to_form()
+    mf.enter_manager("Scott Gibson")
+    mf.select_environment("Development")
+    mf.select_application("PRO", "this is a reason to request access", typ="financial")
+    mf.select_application("RFE", typ="financial")
+    mf.submit_form(False)
+    ticket, request = mf.check_submit()
+    assert(ticket != None)
+    
+    chain = mf.chain_approval(ticket, request)
+    st = set(chain)
+    assert("Carrie Bredenkamp" in st)
+
+    mf.driver.quit()
+
+
+#def test_m1_approval_prd_rfe():
+#    chain = help_m1_approval_chain(env="Production")
+#    st = set(chain)
+#    assert("Dave Rieger" in st)
+#
+#def test_m1_approval_prd_pro():
+#    chain = help_m1_approval_chain(env="Production")
+#    st = set(chain)
+#    assert("Marty Newman" in st or "Chenise Patterson")

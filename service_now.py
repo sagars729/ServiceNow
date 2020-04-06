@@ -151,7 +151,8 @@ class ServiceNow():
         alt = self.driver.find_elements(By.CSS_SELECTOR, ".col-xs-1 > span")
         app = []
         for i, e in enumerate(els): 
-            app.append((e.text.split("\n")[0], alt[i].get_attribute("alt")))
+            try: app.append((e.text.split("\n")[0], alt[i].get_attribute("alt")))
+            except: continue
         for a in app: 
             self.log("Found Approver %s with status %s" % a)
         return app
@@ -178,22 +179,31 @@ class ServiceNow():
         if reject: 
             self.driver.find_element(By.ID, "rejetreason").send_keys(res)
             self.driver.find_elements(By.CSS_SELECTOR, "body > div.modal.fade.ng-isolate-scope.in > div > div > div > div.panel-footer.text-right > button.btn.btn-danger")[0].click()
+        
+        #self.driver.find_elements(By.CSS_SELECTOR, "#sp-nav-bar-global > div > ul > li.dropdown.hidden-xs.ng-scope > a > span.navbar-avatar > div > div > div")[0].click()
+        #self.driver.find_elements(By.CSS_SELECTOR, "#sp-nav-bar-global > div > ul > li.dropdown.hidden-xs.ng-scope.open > ul > li:nth-child(4) > a")[0].click()
         self.impersonate(user)
     
-    def chain_approval(self, ticket, request):
+    def chain_approval(self, ticket, request, actions=[]):
         chain = []
+        i = 0
         while True:
+            appr = True
+            if i < len(actions): appr = actions[i]
+
             self.navigate_to_ticket(request, ticket)
             apps = self.get_approvers()
             apps = [a[0] for a in apps if a[1] == "Requested"]
             if len(apps) <= 0: break
 
-            self.approve_ticket(apps[0], ticket, request)
+            self.approve_ticket(apps[0], ticket, request, reject = (not appr))
             self.log("CHAIN " + str(len(chain)) + ": " + apps[0]) 
             
             chain.append(apps[0])
             self.log("Waiting One Minute For Approval Process")
             time.sleep(60)
+            
+            i+=1
         return chain
 
 if __name__ == "__main__":

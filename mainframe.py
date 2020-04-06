@@ -21,9 +21,9 @@ class Mainframe(ServiceNow):
     app_url = 'https://umddev.service-now.com/itsupport?id=approvals'
     temp_app_url = 'https://umddev.service-now.com/hosting?id=approvals'
 
-    envs = {"development" : 2,
-            "production" : 3,
-            "both" : 4}
+    envs = {"development" : 1,
+            "production" : 2,
+            "both" : 3}
     accs = {"read" : 2,
             "update" : 3,
             "alter" : 4}
@@ -69,7 +69,7 @@ class Mainframe(ServiceNow):
 
     def select_environment(self, env):
         self.log("Selecting Environment " + env + " ID: %d" % self.envs[env.lower()])
-        self.driver.find_element(By.CSS_SELECTOR, "#sp_formfield_environments > label:nth-child(%d) > span" % self.envs[env.lower()]).click()
+        self.driver.find_element(By.CSS_SELECTOR, "#sp_formfield_environments > div > label:nth-child(%d) > input" % self.envs[env.lower()]).click()
 
     def select_application(self, app, res="", typ="student"):
         self.log("Selecting " + typ.capitalize() + " Application: " + app)
