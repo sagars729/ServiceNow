@@ -22,7 +22,7 @@ def register(l):
 	
 def login(l):
 	with l.client.post("https://login.qa.umd.edu/cas/login", 
-		params={"service":"https://app.essr.qa.umd.edu/rw/register"}, 
+		params={"service":"https://app.essr2.dev.umd.edu/rw/register"}, 
 		headers={"Authorization": auth}, 
 		name= "Login",#"https://login.qa.umd.edu/cas/login",
 		catch_response = True) as res:
