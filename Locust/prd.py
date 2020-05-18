@@ -4,13 +4,13 @@ from random import random
 
 my_mutex = threading.Lock() 
 body = {
-    "employee.uId":"116675079",
-    "employee.dirId":"ssaxena1",
+    "employee.uId":"",
+    "employee.dirId":"",
     "employee.employeeName":"Saxena, Sagar",
     "employee.title":"Engineer",
     "employee.dept":"DIT-EE-Enterprise Engineering & Operations",
     "employee.sectionUnit":"DIT-Software Engineering",
-    "employee.supervisorUId":"115807051",
+    "employee.supervisorUId":"",
     "employee.supervisorName":"Labar, Vladimir",
     "activeQuarterTypeCode":"0",
     "prd.prdId":"76c93dfd-4803-47af-810a-c34de3cb9eac",
@@ -24,7 +24,7 @@ body = {
     "actionQuarter":"1",
     "prd.workflowState":"P2 Expectation Setting",
     "prd.cycleYear":"2020",
-    "prd.supervisorUid":"115807051",
+    "prd.supervisorUid":"",
     "copyExpTypeCode":"0",
     "quarterDetails[1].quarter.updatedDate":"2020-05-11 15:00:49.0",
     "quarterDetails[1].quarter.quarterRating":"0",
