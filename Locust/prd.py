@@ -4,14 +4,14 @@ from random import random
 
 my_mutex = threading.Lock() 
 body = {
-    "employee.uId":"",
-    "employee.dirId":"",
-    "employee.employeeName":"Saxena, Sagar",
+    "employee.uId":"Employee UID",
+    "employee.dirId":"Employee Directory ID",
+    "employee.employeeName":"Employee Name",
     "employee.title":"Engineer",
     "employee.dept":"DIT-EE-Enterprise Engineering & Operations",
     "employee.sectionUnit":"DIT-Software Engineering",
-    "employee.supervisorUId":"",
-    "employee.supervisorName":"Labar, Vladimir",
+    "employee.supervisorUId":"Supervisor UID",
+    "employee.supervisorName":"Supervisor Name",
     "activeQuarterTypeCode":"0",
     "prd.prdId":"76c93dfd-4803-47af-810a-c34de3cb9eac",
     "prd.docId":"8171729",
@@ -24,7 +24,7 @@ body = {
     "actionQuarter":"1",
     "prd.workflowState":"P2 Expectation Setting",
     "prd.cycleYear":"2020",
-    "prd.supervisorUid":"",
+    "prd.supervisorUid":"Supervisor UID",
     "copyExpTypeCode":"0",
     "quarterDetails[1].quarter.updatedDate":"2020-05-11 15:00:49.0",
     "quarterDetails[1].quarter.quarterRating":"0",
@@ -112,17 +112,17 @@ def updateForm(l, prdId = "76c93dfd-4803-47af-810a-c34de3cb9eac"):
 	my_mutex.release()
 
 def runUser(l):
-	impersonate(l,"ssaxena1")
+	impersonate(l,"employee_directory_id")
 	goToForm(l)
 	updateForm(l)
 
 def runSuper(l):
-	impersonate(l,"labaru")
+	impersonate(l,"supervisor_directory_id")
 	goToForm(l)
 	updateForm(l)
 
 def runNext(l):
-	impersonate(l,"wgomes")
+	impersonate(l,"nextsupervisor_directory_id")
 	goToNextDash(l)
 	#goToForm(l)
 
