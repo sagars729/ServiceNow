@@ -22,7 +22,7 @@ def register(l):
 	
 def login(l):
 	with l.client.post("https://login.qa.umd.edu/cas/login", 
-		params={"service":"https://app.essr2.dev.umd.edu/rw/register"}, 
+		params={"service":"https://app.essr.dev.umd.edu/rw/register"}, 
 		headers={"Authorization": auth}, 
 		name= "Login",#"https://login.qa.umd.edu/cas/login",
 		catch_response = True) as res:
@@ -46,12 +46,12 @@ def goToForm(l):
 		if "/rw/chemForm" not in res.url: 
 			res.failure("Chem Form Page Was Redirected Elsewhere")
 
-def goToChem(l, chemid = 151337):
+def goToChem(l, chemid = 159644):
 	with l.client.get("/rw/chemForm/%d" % chemid, catch_response=True, name = "See Specific ChemForm") as res:
 		if str(chemid) not in res.url: 
 			res.failure("ChemForm %d Not Found" % chemid)
 
-def goToDrum(l, drumid = 10341):
+def goToDrum(l, drumid = 11800):
 	with l.client.get("/rw/drum/info", params={"drumId": drumid}, catch_response=True, name= "Go To Drum") as res:
 		if "/drum/info" not in res.url:
 			res.failure("Drum %d Not Found In" % drumid)
